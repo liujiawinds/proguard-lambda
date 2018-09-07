@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.liujia</groupId>
+    <artifactId>proguard-lambda</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <java.bootstrap.classes>${java.home}/lib/rt.jar</java.bootstrap.classes>
+        <java.cryptographic.extension.classes>${java.home}/lib/jce.jar</java.cryptographic.extension.classes>
+        <java.secure.socket.extension.classes>${java.home}/lib/jsse.jar</java.secure.socket.extension.classes>
+
+        <java.version>1.8</java.version>
+    </properties>
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!-- 2.8.0-01 and later require maven-compiler-plugin 3.1 or higher -->
+                <version>3.6.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.liujia.progurad.lambda.LambdaTest</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.14</version>
+                <configuration>
+                    <includeDependency>false</includeDependency>
+                    <!--<injar>${project.build.finalName}.${project.packaging}</injar>-->
+                    <injar>${project.build.finalName}.${project.packaging}</injar>
+                    <outjar>${project.build.finalName}-proguard.${project.packaging}</outjar>
+                    <libs>
+                        <!--
+                            <lib>${java.home}/jmods/java.base.jmod(!**.jar;!module-info.class)</lib>
+                        -->
+                        <lib>${java.bootstrap.classes}</lib>
+                        <lib>${java.cryptographic.extension.classes}</lib>
+                        <lib>${java.secure.socket.extension.classes}</lib>
+                    </libs>
+                    <options>
+                        <option>-ignorewarnings</option>
+                        <option>-keepdirectories **</option>
+                        <option>-dontshrink</option>
+                        <option>-keepparameternames</option>
+                        <option>-keeppackagenames com.hansight.**</option>
+                        <option>-renamesourcefileattribute SourceFile</option>
+                        <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod,Signature</option>
+                        <option>-keepclassmembernames class * { java.lang.Class class$(java.lang.String); java.lang.Class class$(java.lang.String, boolean); }</option>
+                        <option>-optimizations !code/allocation/variable</option>
+                        <option>-optimizations !class/marking/final</option>
+
+                        <option>-keep class javax.** { *; }</option>
+                        <option>-keep class java.** { *; }</option>
+                        <option>-keep public class com.hansight.ueba.rules.generator.** { *; }</option>
+                        <option>-keep public class com.hansight.ueba.utils.** { public static <![CDATA[<methods>]]>; }</option>
+                        <option>-keepclassmembers class com.hansight.ueba.rules.dsl.** { public <![CDATA[<methods>]]>; }</option>
+                        <option>-keepnames class org.liujia.progurad.lambda.LambdaTest { *; }</option>
+                        <option>-keepclassmembers class * { @org.springframework.beans.factory.annotation.* *; } </option>
+                        <option>-keepclassmembers class * { @com.alibaba.fastjson.annotation.* *; }</option>
+                    </options>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>6.0.3</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>proguard</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -25,8 +25,16 @@ public class LambdaTest {
         System.out.println("test interface implement");
         B b = () -> A.print("123");
         b.print();
+
+        print("1", "2", "3");
     }
 
+
+    public static void print(String... aaa) {
+        for (String s : aaa) {
+            System.out.println("not specified length array print: " + s);
+        }
+    }
 
 }
 
